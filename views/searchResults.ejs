@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="/">Home</a>
+        <a href="/favorites">Favorites</a>
+    </nav>
+
+    <h1>
+        Search Results 
+        <% if (keyword) { %> for "<%= keyword %>" <% } %>
+        <% if (author) { %> by "<%= author %>" <% } %>
+        <% if (title) { %> titled "<%= title %>" <% } %>
+        (<%= type %>)
+    </h1>    
+    
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } else { %>
+        <div class="poem-results">
+            <% poems.forEach(poem => { %>
+                <div class="poem-card">
+                    <h2><%= poem.title %></h2>
+                    <p><strong>By:</strong> <%= poem.author || 'Unknown' %></p>
+                    <p><%= poem.lines.join(' ') %></p>
+
+                    <!-- Add to Favorites Button -->
+                    <button 
+                        class="add-to-favorites-btn" 
+                        data-title="<%= poem.title %>" 
+                        data-author="<%= poem.author || 'Unknown' %>" 
+                        data-content="<%= poem.lines.join(' ') %>">
+                        Add to Favorites
+                    </button>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>&author=<%= author %>&keyword=<%= keyword %>&title=<%= title %>">Previous</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>&author=<%= author %>&keyword=<%= keyword %>&title=<%= title %>"
+                   class="<%= i === currentPage ? 'active' : '' %>">
+                   <%= i %>
+                </a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>&author=<%= author %>&keyword=<%= keyword %>&title=<%= title %>">Next</a>
+            <% } %>
+        </div>
+    <% } %>
+    
+    <!-- Back to Home Link -->
+    <div class="back-home">
+        <a href="/">← Back to Home</a>
+    </div>
+
+    <script>
+        document.querySelectorAll('.add-to-favorites-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const poem = {
+                    title: button.getAttribute('data-title'),
+                    author: button.getAttribute('data-author'),
+                    content: button.getAttribute('data-content'),
+                };
+
+                try {
+                    const response = await fetch('/favorites/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(poem),
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Poem added to favorites!');
+                    } else {
+                        alert(`Failed to add to favorites: ${result.message}`);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('An error occurred.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+

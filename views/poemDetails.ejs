@@ -1,0 +1,9 @@
+<h1><%= poem.title %></h1>
+<p>By <%= poem.author %></p>
+<p><%= poem.lines.join(' ') %></p>
+<form action="/favorites/add" method="POST">
+    <input type="hidden" name="title" value="<%= poem.title %>">
+    <input type="hidden" name="author" value="<%= poem.author %>">
+    <input type="hidden" name="content" value="<%= poem.lines.join(' ') %>">
+    <button type="submit">Add to Favorites</button>
+</form>

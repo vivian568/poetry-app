@@ -1,0 +1,21 @@
+<h1>Your Favorite Poems</h1>
+<% if (favorites.length > 0) { %>
+    <% favorites.forEach(poem => { %>
+        <div>
+            <h2><%= poem.title %></h2>
+            <p>By <%= poem.author %></p>
+            <p><%= poem.content %></p>
+
+            <!-- Remove from Favorites -->
+            <form action="/favorites/remove" method="POST">
+                <input type="hidden" name="title" value="<%= poem.title %>">
+                <button type="submit">Remove from Favorites</button>
+            </form>
+            
+        </div>
+    <% }); %>
+<% } else { %>
+    <p>No favorite poems yet. <a href="/">Find some poems</a> to add!</p>
+<% } %>
+
+
